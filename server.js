@@ -22,16 +22,22 @@ app.get("/", (req, res) => {
 });
 
 app.get("/instagram/posts", async (req, res) => {
-  const cached = cache.get("instagram_posts");
+  try {
+    const cached = cache.get("instagram_posts");
 
-  if (cached) {
-    return res.json({ source: "cache", data: cached });
+    if (cached) {
+      return res.json({ source: "cache", data: cached });
+    }
+
+    const posts = await getInstagramPosts();
+
+    cache.set("instagram_posts", posts);
+
+    res.json({ source: "instagram", data: posts });
+  } catch (error) {
+    console.error("Erro ao buscar posts:", error);
+    res.status(500).json({ error: "Erro ao buscar posts do Instagram" });
   }
-
-  const posts = await getInstagramPosts();
-  cache.set("instagram_posts", posts);
-
-  res.json({ source: "instagram", data: posts });
 });
 
 const PORT = process.env.PORT || 3000;
