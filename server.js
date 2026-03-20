@@ -17,6 +17,9 @@ const limiter = rateLimit({
   max: 20,
 });
 app.use(limiter);
+app.get("/", (req, res) => {
+  res.send("🚀 API da Casa da Batian está no ar!");
+});
 
 app.get("/instagram/posts", async (req, res) => {
   const cached = cache.get("instagram_posts");
